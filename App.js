@@ -203,11 +203,11 @@ export default function App() {
           component={WriteFinish}
           options={{headerShown: false}}
         />
-        {/* <Stack.Screen
+        <Stack.Screen
           name="Video"
           component={Video}
-          options={{ headerShown: false }}
-        /> */}
+          options={{headerShown: false}}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

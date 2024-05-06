@@ -1,6 +1,6 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {
   StatusBar,
   Box,
@@ -66,6 +66,7 @@ function AppBar() {
 export default function Monitoring() {
   const [on, setOn] = useState(false);
   const navigation = useNavigation();
+  const route = useRoute();
 
   return (
     <NativeBaseProvider>
@@ -79,7 +80,7 @@ export default function Monitoring() {
               onPress={() => {
                 navigation.navigate({
                   name: 'Video',
-                  params: {setOn, data: route.params.data},
+                  params: {setOn, data: route.params?.data || null},
                 });
               }}>
               <Text style={styles.onText}>CCTV 작동 중</Text>
@@ -88,7 +89,7 @@ export default function Monitoring() {
             <TouchableOpacity
               style={styles.button}
               onPress={() => {
-                // createSignalingChannel();
+                createSignalingChannel();
                 setOn(true);
                 navigation.navigate({
                   name: 'Video',

@@ -12,6 +12,11 @@ import Master from '../../components/Master';
 import Viewer from '../../components/Viewer';
 import {startMaster, stopMaster} from '../../utils/master';
 import {startViewer, stopViewer} from '../../utils/viewer';
+import {LogBox} from 'react-native';
+
+LogBox.ignoreLogs([
+  'Non-serializable values were found in the navigation state',
+]);
 
 const Video = ({navigation, route}) => {
   const [localView, setLocalView] = useState('');
@@ -20,6 +25,7 @@ const Video = ({navigation, route}) => {
 
   useEffect(() => {
     if (route.params.data) {
+      console.log(route.params.data);
       setLocalView(route.params.data.localView);
       setRemoteView(route.params.data.remoteView);
       setSelected(route.params.data.selected);
@@ -57,7 +63,7 @@ const Video = ({navigation, route}) => {
           (localView === '' ? (
             <ActivityIndicator size="large" />
           ) : (
-            <Master localView={localView} />
+            <Master localView={localView} /> // Warning: React.createElement: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: object. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
           ))}
         {selected === 'viewer' &&
           (localView === '' ? (
@@ -197,7 +203,7 @@ const styles = StyleSheet.create({
     marginTop: 50,
   },
   active: {
-    backgroundColor: '#F9C076',
+    backgroundColor: '#FFF27F',
     borderWidth: 0,
   },
   activeText: {

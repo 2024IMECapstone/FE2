@@ -113,7 +113,8 @@ export const startMaster = async (
   };
 
   const constraints = {
-    video: true,
+    // video: true,
+    video: {facingMode: 'environment'}, // 후면 카메라로 설정
     audio: true,
   };
 

@@ -1,9 +1,9 @@
-import styled from "styled-components/native";
+import styled from 'styled-components/native';
 
 export const Container = styled.ScrollView`
   flex: 1;
   /* height: 100vh; */
-  height:100%;
+  height: 100%;
   /* background-color: aquamarine; */
   /* align-items: center; */
   /* justify-content: center; */
@@ -27,7 +27,8 @@ export const CardTitle = styled.Text`
   display: flex;
   align-self: flex-start;
   font-size: 16px;
-  margin-bottom: 14px;
+  margin-bottom: 18px;
+  color: #000;
 `;
 
 export const CardInnerBorder = styled.TouchableOpacity`
@@ -55,8 +56,8 @@ export const CardInnerBorder2 = styled.View`
 export const CardTextarea = styled.TextInput.attrs({
   multiline: true, // 여러 줄 입력을 가능하게 함
   numberOfLines: 4, // 입력란의 높이를 설정할 수 있음 (선택 사항)
-  placeholder: "오늘의 육아일기를 작성해볼까요?", // placeholder 설정
-  placeholderTextColor: "#d7d7d7", // placeholder 텍스트 색상 설정 (선택 사항)
+  placeholder: '오늘의 육아일기를 작성해볼까요?', // placeholder 설정
+  placeholderTextColor: '#d7d7d7', // placeholder 텍스트 색상 설정 (선택 사항)
 })`
   width: 100%;
   padding: 48px 24px;
@@ -114,15 +115,18 @@ export const Icon = styled.Image`
 
 export const TagText = styled.Text`
   font-size: 10px;
+  color: #000;
 `;
 
 export const InnerBoxName = styled.Text`
   font-size: 16px;
+  color: #000;
 `;
 
 export const InnerBoxMonth = styled.Text`
   font-size: 16px;
   flex-shrink: 0;
+  color: #000;
 `;
 
 export const CardProfile = styled.View`
@@ -169,16 +173,32 @@ export const Btn = styled.TouchableOpacity`
   /* margin-left: -26px; */
 `;
 
+export const Btn2 = styled.TouchableOpacity`
+  display: flex;
+  gap: 50px;
+  justify-content: center;
+  background-color: #fffacd; /* Change the background color */
+  height: 100px;
+  width: 50%;
+  padding: 12px 20px;
+  /* margin: 24px 0; */
+  justify-content: center;
+  align-items: center;
+  border-radius: 24px;
+  /* margin-left: -26px; */
+`;
+
 export const BtnText = styled.Text`
   font-size: 14px;
+  color: #000;
   /* font-weight: 500; */
 `;
 
 export const submitBtn = styled.TouchableOpacity`
   background-color: #fffacd; /* Change the background color */
-  /* height: 40px;  */
+  height: 50px;
   width: 100%;
-  padding: 12px 20px;
+  padding: 12px 40px;
   justify-content: center;
   align-items: center;
   border-radius: 24px;
@@ -187,6 +207,7 @@ export const submitBtn = styled.TouchableOpacity`
 
 export const submitBtnText = styled.Text`
   font-size: 12px;
+  color: #000;
 `;
 
 export const DiaryHeader = styled.View`

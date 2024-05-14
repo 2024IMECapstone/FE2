@@ -60,15 +60,17 @@ export const StartScreenText2 = styled.Text`
 
 export const StartScreenBtn = styled.TouchableOpacity`
   background-color: #fffacd; /* Change the background color */
-  height: 50px; /* Change the height */
+  height: 60px; /* Change the height */
   justify-content: center;
   align-items: center;
   border-radius: 24px;
+  margin-bottom: 24px;
 `;
 
 export const StartScreenButtonText = styled.Text`
   font-size: 14px;
   font-weight: 600;
+  color: #000;
 `;
 
 export const LoginContainer = styled.View`
@@ -90,11 +92,12 @@ export const LoginInputContainer = styled.View`
   flex-direction: column;
   gap: 24px;
   width: 70%;
+  /* background-color: bisque; */
 `;
 
 export const LoginBtn = styled.TouchableOpacity`
   background-color: #fffacd;
-  height: 50px;
+  height: 60px;
   width: 80%;
   justify-content: center;
   align-items: center;
@@ -105,6 +108,7 @@ export const LoginBtn = styled.TouchableOpacity`
 export const LoginButtonText = styled.Text`
   font-size: 14px;
   font-weight: 600;
+  color: #000;
 `;
 
 export const LoginBottomContainer = styled.View`

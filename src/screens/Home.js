@@ -25,6 +25,11 @@ import MomIcon from '../assets/images/parent.png';
 import DadIcon from '../assets/images/parent.png';
 import NannyIcon from '../assets/images/babystroller.png';
 import Baby from '../assets/images/baby.png';
+import {LogBox} from 'react-native';
+
+LogBox.ignoreLogs([
+  "EventEmitter.removeListener('appStateDidChange', ...): Method has been deprecated. Please instead use `remove()` on the subscription returned by `EventEmitter.addListener`.",
+]);
 
 function AppBar() {
   return (
@@ -45,10 +50,11 @@ function AppBar() {
           borderBottomWidth: 1,
           borderBottomColor: '#DFDFDF',
           backdropFilter: 'blur(8px)',
+          color: 'black',
         }}>
         <HStack alignItems="center" w="10"></HStack>
         <HStack>
-          <Text color="white" fontSize="20" fontWeight="bold">
+          <Text style={styles.text} fontSize="20" fontWeight="bold">
             메인 홈
           </Text>
         </HStack>

@@ -47,7 +47,11 @@ function AppBar() {
         </HStack> */}
         <HStack></HStack>
         <HStack>
-          <Text color="white" fontSize="20" fontWeight="bold">
+          <Text
+            color="white"
+            fontSize="20"
+            fontWeight="bold"
+            style={{color: '#000', marginLeft: 24}}>
             기기 추가
           </Text>
         </HStack>
@@ -75,19 +79,26 @@ export default function Monitoring() {
         <AppBar />
         <View style={styles.container}>
           {on ? (
-            <TouchableOpacity
-              style={styles.onButton}
+            <S.Btn2
+              style={styles.text}
               onPress={() => {
                 navigation.navigate({
                   name: 'Video',
                   params: {setOn, data: route.params?.data || null},
                 });
               }}>
-              <Text style={styles.onText}>CCTV 작동 중</Text>
-            </TouchableOpacity>
+              <Text style={styles.text}>
+                CCTV 작동 중{' '}
+                <MaterialCommunityIcons
+                  name="cellphone-check"
+                  size={20}
+                  color="black"
+                />
+              </Text>
+            </S.Btn2>
           ) : (
-            <TouchableOpacity
-              style={styles.button}
+            <S.Btn2
+              // style={styles.button}
               onPress={() => {
                 createSignalingChannel();
                 setOn(true);
@@ -96,8 +107,15 @@ export default function Monitoring() {
                   params: {setOn, data: null},
                 });
               }}>
-              <Text style={styles.btnText}>기기 추가 +</Text>
-            </TouchableOpacity>
+              <Text style={styles.text}>
+                기기 추가{' '}
+                <MaterialCommunityIcons
+                  name="cellphone"
+                  size={20}
+                  color="black"
+                />
+              </Text>
+            </S.Btn2>
           )}
         </View>
       </View>
@@ -112,6 +130,10 @@ const styles = StyleSheet.create({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    // height: "100vh",
+    alignContent: 'center',
+    height: '90%',
+  },
+  text: {
+    color: 'black',
   },
 });

@@ -56,10 +56,9 @@ function AppBar() {
         <HStack alignItems="center" w="10"></HStack>
         <HStack>
           <Text
-            color="white"
             fontSize="20"
             fontWeight="bold"
-            style={{marginLeft: -24}}>
+            style={{color: '#000', marginLeft: -24}}>
             오늘의 육아일기
           </Text>
         </HStack>

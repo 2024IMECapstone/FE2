@@ -1,15 +1,15 @@
-import React from "react";
-import { StyleSheet, View, Text, Button } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import * as O from "../../styles/Onboard";
+import React from 'react';
+import {StyleSheet, View, Text, Button} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import * as O from '../../styles/Onboard';
 
 export default function WriteFinish() {
   const navigation = useNavigation();
   const goToDiary = () => {
-    navigation.navigate("Diary");
+    navigation.navigate('Diary');
   };
   const goToMain = () => {
-    navigation.navigate("Main");
+    navigation.navigate('Main');
   };
   return (
     <O.StartScreenContainer>
@@ -42,34 +42,34 @@ export default function WriteFinish() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   text: {
-    color: "black",
+    color: 'black',
   },
   topcontainer: {
-    display: "flex",
+    display: 'flex',
     // justifyContent: "center",
-    alignItems: "center",
+    alignItems: 'center',
     // gap: 10,
-    marginTop: "30%",
+    marginTop: '30%',
   },
   middlecontainer: {
-    display: "flex",
-    flexDirection: "column",
+    display: 'flex',
+    flexDirection: 'column',
     // justifyContent: "center",
-    alignItems: "center",
+    alignItems: 'center',
     gap: 5,
-    marginTop: "-10%",
+    marginTop: '-10%',
   },
   textbold: {
-    fontWeight: "800",
+    fontWeight: '800',
   },
   bottomcontainer: {
     // marginTop: "-10%",
-    display: "flex",
+    display: 'flex',
     gap: 12,
   },
 });

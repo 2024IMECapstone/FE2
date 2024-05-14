@@ -167,13 +167,13 @@ export default function DiaryDetail() {
         onRequestClose={closeModal}>
         <View style={styles.modalBackground}>
           <View style={styles.modalContent}>
-            <Text>이 육아일기를 삭제하시겠습니까?</Text>
+            <Text style={styles.text}>이 육아일기를 삭제하시겠습니까?</Text>
             <View style={styles.modalBtnBox}>
               <TouchableOpacity onPress={closeModal}>
-                <Text>아니오</Text>
+                <Text style={styles.text}>아니오</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={deleteDiary}>
-                <Text>예</Text>
+              <TouchableOpacity onPress={deleteDiary} style={{marginLeft: 50}}>
+                <Text style={styles.text}>예</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -190,6 +190,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  text: {
+    color: 'gray',
+  },
   modalBackground: {
     // flex: 1,
     height: '120%',
@@ -205,12 +208,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff', // White background for modal content
     padding: 20,
     borderRadius: 10,
-    gap: 30,
+    // gap: 30,
     width: '80%', // Adjust width as needed
+    color: 'black',
   },
   modalBtnBox: {
     display: 'flex',
     flexDirection: 'row',
-    gap: 80,
+    marginTop: 20,
+    // gap: 5,
   },
 });

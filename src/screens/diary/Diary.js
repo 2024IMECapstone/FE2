@@ -46,7 +46,11 @@ function AppBar() {
           />
         </HStack>
         <HStack>
-          <Text color="white" fontSize="20" fontWeight="bold">
+          <Text
+            color="white"
+            fontSize="20"
+            fontWeight="bold"
+            style={styles.text}>
             육아일기
           </Text>
         </HStack>
@@ -140,5 +144,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  text: {
+    color: 'black',
   },
 });

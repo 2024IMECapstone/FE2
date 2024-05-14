@@ -1,8 +1,8 @@
-import * as AWS from "aws-sdk";
-import * as KVSWebRTC from "amazon-kinesis-video-streams-webrtc";
-import { SignalingClient } from "amazon-kinesis-video-streams-webrtc";
-import { mediaDevices, RTCPeerConnection } from "react-native-webrtc";
-import * as Config from "../../key";
+import * as AWS from 'aws-sdk';
+import * as KVSWebRTC from 'amazon-kinesis-video-streams-webrtc';
+import {SignalingClient} from 'amazon-kinesis-video-streams-webrtc';
+import {mediaDevices, RTCPeerConnection} from 'react-native-webrtc';
+import * as Config from '../../key';
 
 const master = {
   signalingClient: null,
@@ -14,7 +14,7 @@ const master = {
   peerConnectionStatsInterval: null,
 };
 
-const onStatsReport = (report) => {
+const onStatsReport = report => {
   // TODO: Publish stats
 };
 
@@ -23,7 +23,7 @@ export const startMaster = async (
   setLocalView,
   remoteView,
   setRemoteView,
-  setSelected
+  setSelected,
 ) => {
   // Create KVS client : KVS 클라이언트 생성
   const kinesisVideoClient = new AWS.KinesisVideo({
@@ -42,14 +42,14 @@ export const startMaster = async (
     })
     .promise();
   const channelARN = describeSignalingChannelResponse.ChannelInfo.ChannelARN;
-  console.log("[MASTER] Channel ARN: ", channelARN);
+  console.log('[MASTER] Channel ARN: ', channelARN);
 
   // Get signaling channel endpoints : 생성된 KVS 클라이언트에서 signaling chaneel endpoint 가져오기
   const getSignalingChannelEndpointResponse = await kinesisVideoClient
     .getSignalingChannelEndpoint({
       ChannelARN: channelARN,
       SingleMasterChannelEndpointConfiguration: {
-        Protocols: ["WSS", "HTTPS"],
+        Protocols: ['WSS', 'HTTPS'],
         Role: KVSWebRTC.Role.MASTER,
       },
     })
@@ -60,9 +60,9 @@ export const startMaster = async (
         endpoints[endpoint.Protocol] = endpoint.ResourceEndpoint;
         return endpoints;
       },
-      {}
+      {},
     );
-  console.log("[MASTER] Endpoints: ", endpointsByProtocol);
+  console.log('[MASTER] Endpoints: ', endpointsByProtocol);
 
   // Create Signaling Client : signaling 클라이언트 생성
   master.signalingClient = new SignalingClient({
@@ -98,18 +98,18 @@ export const startMaster = async (
       urls: `stun:stun.kinesisvideo.${Config.REGION}.amazonaws.com:443`,
     },
   ];
-  getIceServerConfigResponse.IceServerList.forEach((iceServer) =>
+  getIceServerConfigResponse.IceServerList.forEach(iceServer =>
     iceServers.push({
       urls: iceServer.Uris,
       username: iceServer.Username,
       credential: iceServer.Password,
-    })
+    }),
   );
-  console.log("[MASTER] ICE servers: ", iceServers);
+  console.log('[MASTER] ICE servers: ', iceServers);
 
   const configuration = {
     iceServers,
-    iceTransportPolicy: "all",
+    iceTransportPolicy: 'all',
   };
 
   const constraints = {
@@ -123,17 +123,17 @@ export const startMaster = async (
   try {
     master.localStream = await mediaDevices.getUserMedia(constraints);
     setLocalView(master.localStream);
-    setSelected("cctv");
+    setSelected('cctv');
   } catch (e) {
-    console.error("[MASTER] Could not find webcam");
+    console.error('[MASTER] Could not find webcam');
   }
 
-  master.signalingClient.on("open", async () => {
-    console.log("[MASTER] Connected to signaling service");
+  master.signalingClient.on('open', async () => {
+    console.log('[MASTER] Connected to signaling service');
   });
 
-  master.signalingClient.on("sdpOffer", async (offer, remoteClientId) => {
-    console.log("[MASTER] Received SDP offer from client: " + remoteClientId);
+  master.signalingClient.on('sdpOffer', async (offer, remoteClientId) => {
+    console.log('[MASTER] Received SDP offer from client: ' + remoteClientId);
 
     // Create a new peer connection using the offer from the given client
     const peerConnection = new RTCPeerConnection(configuration);
@@ -149,29 +149,29 @@ export const startMaster = async (
     }
 
     // Send any ICE candidates to the other peer
-    peerConnection.addEventListener("icecandidate", ({ candidate }) => {
+    peerConnection.addEventListener('icecandidate', ({candidate}) => {
       if (candidate) {
         console.log(
-          "[MASTER] Generated ICE candidate for client: " + remoteClientId
+          '[MASTER] Generated ICE candidate for client: ' + remoteClientId,
         );
 
         // When trickle ICE is enabled, send the ICE candidates as they are generated.
         console.log(
-          "[MASTER] Sending ICE candidate to client: " + remoteClientId
+          '[MASTER] Sending ICE candidate to client: ' + remoteClientId,
         );
         master.signalingClient.sendIceCandidate(candidate, remoteClientId);
       } else {
         console.log(
-          "[MASTER] All ICE candidates have been generated for client: " +
-            remoteClientId
+          '[MASTER] All ICE candidates have been generated for client: ' +
+            remoteClientId,
         );
       }
     });
 
     // As remote tracks are received, add them to the remote view
-    peerConnection.onaddstream = (event) => {
+    peerConnection.onaddstream = event => {
       console.log(
-        "[MASTER] Received remote track from client: " + remoteClientId
+        '[MASTER] Received remote track from client: ' + remoteClientId,
       );
 
       if (remoteView.srcObject) {
@@ -187,49 +187,49 @@ export const startMaster = async (
     await peerConnection.setRemoteDescription(offer);
 
     // Create an SDP answer to send back to the client
-    console.log("[MASTER] Creating SDP answer for client: " + remoteClientId);
+    console.log('[MASTER] Creating SDP answer for client: ' + remoteClientId);
     await peerConnection.setLocalDescription(
       await peerConnection.createAnswer({
         offerToReceiveAudio: true,
         offerToReceiveVideo: true,
-      })
+      }),
     );
 
     // When trickle ICE is enabled, send the answer now and then send ICE candidates as they are generated. Otherwise wait on the ICE candidates.
-    console.log("[MASTER] Sending SDP answer to client: " + remoteClientId);
+    console.log('[MASTER] Sending SDP answer to client: ' + remoteClientId);
     master.signalingClient.sendSdpAnswer(
       peerConnection.localDescription,
-      remoteClientId
+      remoteClientId,
     );
 
     console.log(
-      "[MASTER] Generating ICE candidates for client: " + remoteClientId
+      '[MASTER] Generating ICE candidates for client: ' + remoteClientId,
     );
   });
 
   master.signalingClient.on(
-    "iceCandidate",
+    'iceCandidate',
     async (candidate, remoteClientId) => {
       console.log(
-        "[MASTER] Received ICE candidate from client: " + remoteClientId
+        '[MASTER] Received ICE candidate from client: ' + remoteClientId,
       );
 
       // Add the ICE candidate received from the client to the peer connection
       const peerConnection = master.peerConnectionByClientId[remoteClientId];
       peerConnection.addIceCandidate(candidate);
-    }
+    },
   );
 
-  master.signalingClient.on("close", () => {
-    setLocalView("");
-    console.log("[MASTER] Disconnected from signaling channel");
+  master.signalingClient.on('close', () => {
+    setLocalView('');
+    console.log('[MASTER] Disconnected from signaling channel');
   });
 
-  master.signalingClient.on("error", () => {
-    console.error("[MASTER] Signaling client error");
+  master.signalingClient.on('error', () => {
+    console.error('[MASTER] Signaling client error');
   });
 
-  console.log("[MASTER] Starting master connection");
+  console.log('[MASTER] Starting master connection');
   master.signalingClient.open();
 };
 
@@ -238,26 +238,26 @@ export const stopMaster = async (
   setLocalView,
   remoteView,
   setRemoteView,
-  setSelected
+  setSelected,
 ) => {
-  console.log("[MASTER] Stopping master connection");
+  console.log('[MASTER] Stopping master connection');
   if (master.signalingClient) {
     master.signalingClient.close();
     master.signalingClient = null;
   }
 
-  Object.keys(master.peerConnectionByClientId).forEach((clientId) => {
+  Object.keys(master.peerConnectionByClientId).forEach(clientId => {
     master.peerConnectionByClientId[clientId].close();
   });
   master.peerConnectionByClientId = [];
 
   if (master.localStream) {
-    master.localStream.getTracks().forEach((track) => track.stop());
+    master.localStream.getTracks().forEach(track => track.stop());
     master.localStream = null;
   }
 
-  master.remoteStreams.forEach((remoteStream) =>
-    remoteStream.getTracks().forEach((track) => track.stop())
+  master.remoteStreams.forEach(remoteStream =>
+    remoteStream.getTracks().forEach(track => track.stop()),
   );
 
   master.remoteStreams = [];
@@ -269,14 +269,14 @@ export const stopMaster = async (
 
   if (master.localView) {
     master.localView.srcObject = null;
-    setLocalView("");
+    setLocalView('');
   }
 
   if (master.remoteView) {
     master.remoteView.srcObject = null;
   }
 
-  setLocalView("");
-  setRemoteView("");
-  setSelected("none");
+  setLocalView('');
+  setRemoteView('');
+  setSelected('none');
 };

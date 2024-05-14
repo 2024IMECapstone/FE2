@@ -135,6 +135,13 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
+    /* 추가 */
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    //
+
     defaultConfig {
         applicationId "com.babystar"
         minSdkVersion rootProject.ext.minSdkVersion

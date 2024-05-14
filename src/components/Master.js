@@ -1,13 +1,13 @@
-import React from "react";
-import { StyleSheet } from "react-native";
-import { RTCView } from "react-native-webrtc";
+import React from 'react';
+import {StyleSheet} from 'react-native';
+import {RTCView} from 'react-native-webrtc';
 
-const Master = ({ localView }) => {
+const Master = ({localView}) => {
   return (
     <RTCView
       style={styles.cctv}
       zOrder={20}
-      objectFit={"cover"}
+      objectFit={'cover'}
       mirror={false}
       streamURL={localView.toURL()}
     />
@@ -16,7 +16,7 @@ const Master = ({ localView }) => {
 
 const styles = StyleSheet.create({
   cctv: {
-    flexBasis: "50%",
+    flexBasis: '50%',
   },
 });
 

@@ -1,20 +1,19 @@
-import React from "react";
-import { StyleSheet, View, Text, Button } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import * as O from "../styles/Onboard";
+import React from 'react';
+import {StyleSheet, View, Text, Button} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import * as O from '../styles/Onboard';
 
 export default function StartScreen() {
   const navigation = useNavigation();
   const goToLogin = () => {
-    navigation.navigate("Login");
+    navigation.navigate('Login');
   };
   return (
     <O.StartScreenContainer>
       <O.StartScreenInnerContainer>
         <View style={styles.topcontainer}>
           <O.StartScreenLogo
-            source={require("../assets/images/logo.png")}
-          ></O.StartScreenLogo>
+            source={require('../assets/images/logo.png')}></O.StartScreenLogo>
           <O.StartScreenText1>나만의 AI 육아 파트너, 아기별</O.StartScreenText1>
         </View>
         <View style={styles.middlecontainer}>
@@ -22,7 +21,7 @@ export default function StartScreen() {
             <Text style={styles.textbold}>AI</Text> 육아 파트너 아기별을 통해
           </O.StartScreenText2>
           <O.StartScreenText2>
-            아기의 움직임을 편리하게{" "}
+            아기의 움직임을 편리하게{' '}
             <Text style={styles.textbold}>모니터링</Text>
             하고
           </O.StartScreenText2>
@@ -44,32 +43,32 @@ export default function StartScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   text: {
-    color: "black",
+    color: 'black',
   },
   topcontainer: {
-    display: "flex",
+    display: 'flex',
     // justifyContent: "center",
-    alignItems: "center",
+    alignItems: 'center',
     gap: 14,
-    marginTop: "30%",
+    marginTop: '30%',
   },
   middlecontainer: {
-    display: "flex",
-    flexDirection: "column",
+    display: 'flex',
+    flexDirection: 'column',
     // justifyContent: "center",
-    alignItems: "center",
+    alignItems: 'center',
     gap: 5,
-    marginTop: "-10%",
+    marginTop: '-10%',
   },
   textbold: {
-    fontWeight: "800",
+    fontWeight: '800',
   },
   bottomcontainer: {
-    marginTop: "-10%",
+    marginTop: '-10%',
   },
 });

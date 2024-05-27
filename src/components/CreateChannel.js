@@ -1,5 +1,5 @@
 import * as AWS from 'aws-sdk';
-import * as Config from '../../key';
+// import * as Config from '../../key';
 
 const createSignalingChannel = async () => {
   // Create KVS client

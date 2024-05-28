@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {StyleSheet, View, Text} from 'react-native';
 import Timeline from 'react-native-timeline-flatlist';
 
@@ -6,21 +6,40 @@ const TimelineAPI = ({
 }) => {
     const [list, setList] = useState([
     {
-        time: <Text> 아침 </Text>,
-        title: <Text> 오늘 </Text>,
-        description: <Text> 아놔 </Text>
+        title: '타로가 배고픈 것 같아요',
     },
     {
-        time: <Text> 점심 </Text>,
-        title: <Text> 오늘 </Text>,
-        description: <Text> 오므라이스 </Text>
-    }]);
+        title: '타로가 졸린 것 같아요',
+    },
+    {
+        title: '타로가 배앓이 중인 것 같아요',
+    },
+    {
+        title: '타로가 트름하고 싶은 것 같아요',
+    },
+    ]);
+
+    return (
+        <Timeline
+            data={list}
+            circleSize={14}
+            circleColor='#FFFACD'
+            lineColor='#D9D9D9'
+            lineWidth={3}
+            descriptionStyle={styles.descriptionStyle}
+            timeContainerStyle={{ minWidth: 52, marginTop: -5 }}
+            descriptionStyle={{color:'black'}}
+            options={{
+                style: {paddingTop: 16}
+            }}
+        />
+    )
 }
 
 export default function Sound() {
   return (
     <View style={styles.container}>
-      <Text>수정수정</Text>
+        <TimelineAPI />
     </View>
   );
 }
@@ -31,5 +50,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  descriptionStyle: {
+    color: '#000',
+    fontSize: 10,
   },
 });

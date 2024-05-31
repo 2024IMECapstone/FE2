@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   Pressable,
   ActivityIndicator,
 } from 'react-native';
+import {captureRef} from 'react-native-view-shot';
 import Header from '../../components/Header';
 import Master from '../../components/Master';
 import Viewer from '../../components/Viewer';
@@ -21,7 +22,8 @@ LogBox.ignoreLogs([
 const Video = ({navigation, route}) => {
   const [localView, setLocalView] = useState('');
   const [remoteView, setRemoteView] = useState('');
-  const [selected, setSelected] = useState('none'); //none, cctv, viewer
+  const [selected, setSelected] = useState('none'); // none, cctv, viewer
+  const captureViewRef = useRef(null);
 
   useEffect(() => {
     if (route.params.data) {
@@ -32,12 +34,31 @@ const Video = ({navigation, route}) => {
     }
   }, []);
 
-  // 추가
-  // useEffect(() => {
-  //   navigation.setOptions({setOn: route.params?.setOn || false});
-  // }, [route.params?.setOn]);
+  useEffect(() => {
+    let captureInterval;
+    if (selected === 'cctv') {
+      captureInterval = setInterval(() => {
+        captureScreen();
+      }, 1000);
+    } else {
+      if (captureInterval) clearInterval(captureInterval);
+    }
+    return () => clearInterval(captureInterval);
+  }, [selected]);
 
-  // 추가
+  const captureScreen = async () => {
+    try {
+      const uri = await captureRef(captureViewRef, {
+        format: 'png',
+        quality: 0.8,
+      });
+      console.log('Captured image uri: ', uri);
+      // Save or use the uri as needed
+    } catch (error) {
+      console.error('Failed to capture screenshot', error);
+    }
+  };
+
   const handleStop = () => {
     stopMaster(localView, setLocalView, remoteView, setRemoteView, setSelected);
     stopViewer(localView, setLocalView, remoteView, setRemoteView, setSelected);
@@ -53,7 +74,7 @@ const Video = ({navigation, route}) => {
         navigation={navigation}
         data={{localView, remoteView, selected}}
       />
-      <View style={styles.main}>
+      <View style={styles.main} ref={captureViewRef} collapsable={false}>
         {selected === 'none' && (
           <View style={styles.video}>
             <Text style={styles.guide}>아래의 역할을 선택해주세요</Text>
@@ -63,7 +84,7 @@ const Video = ({navigation, route}) => {
           (localView === '' ? (
             <ActivityIndicator size="large" />
           ) : (
-            <Master localView={localView} /> // Warning: React.createElement: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: object. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
+            <Master localView={localView} />
           ))}
         {selected === 'viewer' &&
           (localView === '' ? (
@@ -90,7 +111,7 @@ const Video = ({navigation, route}) => {
                   setSelected,
                 );
                 setSelected('cctv');
-                navigation.setOptions({setOn: true}); // 추가
+                navigation.setOptions({setOn: true});
               }}>
               <Text
                 style={[
@@ -112,7 +133,7 @@ const Video = ({navigation, route}) => {
                   setSelected,
                 );
                 setSelected('viewer');
-                navigation.setOptions({setOn: true}); // 추가
+                navigation.setOptions({setOn: true});
               }}>
               <Text
                 style={[

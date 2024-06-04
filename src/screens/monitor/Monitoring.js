@@ -14,6 +14,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import * as S from '../../styles/MainStyle';
 import createSignalingChannel from '../../components/CreateChannel';
+import Timeline from '../monitor/Timeline.js';
 
 function AppBar() {
   const navigation = useNavigation();
@@ -117,6 +118,15 @@ export default function Monitoring() {
               </Text>
             </S.Btn2>
           )}
+          /*
+          let timeline() = Timeline();
+          <IconButton
+            onPress = {timeline}
+            icon={
+              <Ionicons name="notifications-outline" size={20} color="black" />
+                 }>
+              </IconButton>
+              */
         </View>
       </View>
     </NativeBaseProvider>

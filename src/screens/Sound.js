@@ -15,7 +15,7 @@ const TimelineAPI = ({ data, showAll, onShowMore }) => {
     };
 
     return (
-        <View style={[styles.timelineContainer, { height: data.length <= 4 ? data.length * 42 + 64 : 4 * 42 + (data.length - 4) * 42}]}>
+        <View style={[styles.timelineContainer, { height: showAll ? data.length * 42 + 2 : data.length * 42 + 20}]}>
             <Timeline
                 showTime={false}
                 data={showAll ? data.slice(0, data.length) : data.slice(0, 4)}

@@ -7,13 +7,14 @@ import {
   Pressable,
   ActivityIndicator,
 } from 'react-native';
-import {captureRef} from 'react-native-view-shot';
+// import {captureRef} from 'react-native-view-shot';
 import Header from '../../components/Header';
 import Master from '../../components/Master';
 import Viewer from '../../components/Viewer';
 import {startMaster, stopMaster} from '../../utils/master';
 import {startViewer, stopViewer} from '../../utils/viewer';
 import {LogBox} from 'react-native';
+import axios from 'axios';
 
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
@@ -34,29 +35,24 @@ const Video = ({navigation, route}) => {
     }
   }, []);
 
-  useEffect(() => {
-    let captureInterval;
-    if (selected === 'cctv') {
-      captureInterval = setInterval(() => {
-        captureScreen();
-      }, 1000);
-    } else {
-      if (captureInterval) clearInterval(captureInterval);
-    }
-    return () => clearInterval(captureInterval);
-  }, [selected]);
-
-  const captureScreen = async () => {
-    try {
-      const uri = await captureRef(captureViewRef, {
-        format: 'png',
-        quality: 0.8,
+  const handleStartCCTV = async () => {
+    await startMaster(
+      localView,
+      setLocalView,
+      remoteView,
+      setRemoteView,
+      setSelected,
+    );
+    setSelected('cctv');
+    navigation.setOptions({setOn: true});
+    axios
+      .get('http://192.168.219.104:5000/process_audio')
+      .then(response => {
+        console.log('Response from local server:', response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching from local server:', error);
       });
-      console.log('Captured image uri: ', uri);
-      // Save or use the uri as needed
-    } catch (error) {
-      console.error('Failed to capture screenshot', error);
-    }
   };
 
   const handleStop = () => {
@@ -102,17 +98,7 @@ const Video = ({navigation, route}) => {
                 selected === 'cctv' && styles.active,
               ]}
               disabled={selected !== 'none'}
-              onPress={() => {
-                startMaster(
-                  localView,
-                  setLocalView,
-                  remoteView,
-                  setRemoteView,
-                  setSelected,
-                );
-                setSelected('cctv');
-                navigation.setOptions({setOn: true});
-              }}>
+              onPress={handleStartCCTV}>
               <Text
                 style={[
                   styles.btnText,

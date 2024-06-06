@@ -7,7 +7,7 @@ import {
   Pressable,
   ActivityIndicator,
 } from 'react-native';
-// import {captureRef} from 'react-native-view-shot';
+import LinearGradient from 'react-native-linear-gradient'; // Import LinearGradient
 import Header from '../../components/Header';
 import Master from '../../components/Master';
 import Viewer from '../../components/Viewer';
@@ -24,6 +24,8 @@ const Video = ({navigation, route}) => {
   const [localView, setLocalView] = useState('');
   const [remoteView, setRemoteView] = useState('');
   const [selected, setSelected] = useState('none'); // none, cctv, viewer
+  const [isRequestInProgress, setIsRequestInProgress] = useState(false);
+  const [statusMessage, setStatusMessage] = useState('역할 선택하기');
   const captureViewRef = useRef(null);
 
   useEffect(() => {
@@ -35,6 +37,38 @@ const Video = ({navigation, route}) => {
     }
   }, []);
 
+  useEffect(() => {
+    let interval;
+    if (selected === 'cctv') {
+      interval = setInterval(() => {
+        if (!isRequestInProgress) {
+          setIsRequestInProgress(true);
+          axios
+            .get('http://192.168.219.104:5000/process_audio')
+            .then(response => {
+              console.log('Response from local server:', response.data);
+              if (response.data.status === 'not_detected') {
+                setStatusMessage('아기는 평온합니다 :)');
+              } else if (response.data.status === 'detected') {
+                setStatusMessage(response.data.cryingType);
+              }
+            })
+            .catch(error => {
+              console.error('Error fetching from local server:', error);
+            })
+            .finally(() => {
+              setIsRequestInProgress(false);
+            });
+        }
+      }, 5000); // 5000 ms = 5 seconds
+    }
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [selected, isRequestInProgress]);
+
   const handleStartCCTV = async () => {
     await startMaster(
       localView,
@@ -44,28 +78,34 @@ const Video = ({navigation, route}) => {
       setSelected,
     );
     setSelected('cctv');
+    setStatusMessage('아기의 상태를 분석중입니다...');
     navigation.setOptions({setOn: true});
-    axios
-      .get('http://192.168.219.104:5000/process_audio')
-      .then(response => {
-        console.log('Response from local server:', response.data);
-      })
-      .catch(error => {
-        console.error('Error fetching from local server:', error);
-      });
   };
 
   const handleStop = () => {
     stopMaster(localView, setLocalView, remoteView, setRemoteView, setSelected);
     stopViewer(localView, setLocalView, remoteView, setRemoteView, setSelected);
     setSelected('none');
+    setStatusMessage('역할 선택하기');
     navigation.setOptions({setOn: false});
+  };
+
+  const getStatusBackgroundColor = message => {
+    if (message === '역할 선택하기') {
+      return 'transparent';
+    } else if (message === '아기는 평온합니다 :)') {
+      return 'rgba(144, 238, 144, 0.5)'; // Light Green with transparency
+    } else if (message === '아기의 상태를 분석중입니다...') {
+      return 'rgba(255, 255, 0, 0.2)'; // Light Yellow with transparency
+    } else {
+      return 'rgba(255, 192, 203, 0.9)'; // Light Red (Pink) with transparency
+    }
   };
 
   return (
     <SafeAreaView style={styles.Video}>
       <Header
-        title="영상 보기"
+        title="영상 보기 "
         back
         navigation={navigation}
         data={{localView, remoteView, selected}}
@@ -89,7 +129,13 @@ const Video = ({navigation, route}) => {
             <Viewer remoteView={remoteView} />
           ))}
         <View style={styles.select}>
-          <Text style={styles.text}>역할 선택하기</Text>
+          <View style={styles.statusContainer}>
+            <LinearGradient
+              colors={['transparent', getStatusBackgroundColor(statusMessage)]}
+              style={styles.gradient}
+            />
+            <Text style={styles.text}>{statusMessage}</Text>
+          </View>
           <View style={styles.selectView}>
             <Pressable
               style={[
@@ -179,6 +225,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'black',
     marginVertical: 20,
+    zIndex: 1, // Ensure text is above the gradient
   },
   selectView: {
     width: '100%',
@@ -215,6 +262,23 @@ const styles = StyleSheet.create({
   },
   activeText: {
     color: 'white',
+  },
+  statusContainer: {
+    position: 'relative',
+    // width: '80%',
+    // alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  gradient: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 12,
+    // borderWidth: 1,
+    // borderColor: '#FFFACD',
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    marginVertical: 24,
+    // borderStyle: 'dashed',
   },
 });
 

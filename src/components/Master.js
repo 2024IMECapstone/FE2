@@ -16,7 +16,9 @@ const Master = ({localView}) => {
 
 const styles = StyleSheet.create({
   cctv: {
-    flexBasis: '50%',
+    // flexBasis: '50%',
+    width: '100%', // 화면의 가로 길이를 100%로 설정
+    height: '60%', // 화면의 세로 길이를 70%로 설정
   },
 });
 

@@ -27,7 +27,8 @@ def process_audio():
             print(f"Device {i}: {dev['name']}")
 
 # 사용자가 입력 장치를 선택하도록 요청
-    device_index = int(input("Select the device index: "))
+    #device_index = int(input("Select the device index: "))
+    device_index = 1
 
 # 오디오 설정
     format = pyaudio.paInt16
@@ -90,7 +91,8 @@ def process_audio():
                 break
 
         if found_desired_class:
-            my_classes=['asphyxia','hunger','normal','pain','tired','discomfort']
+            # my_classes=['asphyxia','hunger','normal','pain','tired','discomfort']
+            my_classes=['질식사','배고픔','보통','고통','피곤함','불편함']
             reloaded_results = reloaded_model(wav)
             crying_type = my_classes[tf.math.argmax(reloaded_results)]
             print(f'The main sound is: {crying_type}')

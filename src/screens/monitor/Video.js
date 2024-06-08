@@ -26,6 +26,7 @@ const Video = ({navigation, route}) => {
   const [selected, setSelected] = useState('none'); // none, cctv, viewer
   const [isRequestInProgress, setIsRequestInProgress] = useState(false);
   const [statusMessage, setStatusMessage] = useState('역할 선택하기');
+  const [videoProcessResult, setVideoProcessResult] = useState(null); // 추가된 상태 변수
   const captureViewRef = useRef(null);
 
   useEffect(() => {
@@ -44,7 +45,7 @@ const Video = ({navigation, route}) => {
         if (!isRequestInProgress) {
           setIsRequestInProgress(true);
           axios
-            .get('http://192.168.219.104:5000/process_audio')
+            .get('http://172.19.17.109:5000/process_audio')
             .then(response => {
               console.log('Response from local server:', response.data);
               if (response.data.status === 'not_detected') {
@@ -78,8 +79,35 @@ const Video = ({navigation, route}) => {
       setSelected,
     );
     setSelected('cctv');
-    setStatusMessage('아기의 상태를 분석중입니다...');
+    setStatusMessage('아기의 울음소리를 분석중입니다...');
     navigation.setOptions({setOn: true});
+
+    // 8초 후에 axios GET 요청 보내기
+    console.log('Sending GET request to video process server...');
+    // setTimeout(() => {
+    //   axios
+    //     .get(
+    //       'http://ec2-13-125-118-121.ap-northeast-2.compute.amazonaws.com:5000/process_video',
+    //     )
+    //     .then(response => {
+    //       console.log('Response from video process server:', response.data);
+    //       setVideoProcessResult(response.data); // 응답 값을 상태 변수에 저장
+    //     })
+    //     .catch(error => {
+    //       console.error('Error fetching from video process server:', error);
+    //     });
+    // }, 1000); // 8000 ms = 8 seconds
+    axios
+      .get(
+        'http://ec2-54-180-79-37.ap-northeast-2.compute.amazonaws.com:5000/process_video',
+      )
+      .then(response => {
+        console.log('Response from video process server:', response.data);
+        // setVideoProcessResult(response.data); // 응답 값을 상태 변수에 저장
+      })
+      .catch(error => {
+        console.error('Error fetching from video process server:', error);
+      });
   };
 
   const handleStop = () => {
@@ -95,7 +123,7 @@ const Video = ({navigation, route}) => {
       return 'transparent';
     } else if (message === '아기는 평온합니다 :)') {
       return 'rgba(144, 238, 144, 0.5)'; // Light Green with transparency
-    } else if (message === '아기의 상태를 분석중입니다...') {
+    } else if (message === '아기의 울음소리를 분석중입니다...') {
       return 'rgba(255, 255, 0, 0.2)'; // Light Yellow with transparency
     } else {
       return 'rgba(255, 192, 203, 0.9)'; // Light Red (Pink) with transparency
@@ -136,48 +164,54 @@ const Video = ({navigation, route}) => {
             />
             <Text style={styles.text}>{statusMessage}</Text>
           </View>
-          <View style={styles.selectView}>
-            <Pressable
-              style={[
-                styles.button,
-                styles.right,
-                selected === 'cctv' && styles.active,
-              ]}
-              disabled={selected !== 'none'}
-              onPress={handleStartCCTV}>
-              <Text
+          {selected === 'none' && (
+            <View style={styles.selectView}>
+              <Pressable
                 style={[
-                  styles.btnText,
-                  selected === 'cctv' && styles.activeText,
-                ]}>
-                CCTV
-              </Text>
-            </Pressable>
-            <Pressable
-              style={[styles.button, selected === 'viewer' && styles.active]}
-              disabled={selected !== 'none'}
-              onPress={() => {
-                startViewer(
-                  localView,
-                  setLocalView,
-                  remoteView,
-                  setRemoteView,
-                  setSelected,
-                );
-                setSelected('viewer');
-                navigation.setOptions({setOn: true});
-              }}>
-              <Text
-                style={[
-                  styles.btnText,
-                  selected === 'viewer' && styles.activeText,
-                ]}>
-                뷰어
-              </Text>
-            </Pressable>
-          </View>
+                  styles.button,
+                  styles.right,
+                  selected === 'cctv' && styles.active,
+                ]}
+                disabled={selected !== 'none'}
+                onPress={handleStartCCTV}>
+                <Text
+                  style={[
+                    styles.btnText,
+                    selected === 'cctv' && styles.activeText,
+                  ]}>
+                  CCTV
+                </Text>
+              </Pressable>
+              <Pressable
+                style={[styles.button, selected === 'viewer' && styles.active]}
+                disabled={selected !== 'none'}
+                onPress={() => {
+                  startViewer(
+                    localView,
+                    setLocalView,
+                    remoteView,
+                    setRemoteView,
+                    setSelected,
+                  );
+                  setSelected('viewer');
+                  navigation.setOptions({setOn: true});
+                }}>
+                <Text
+                  style={[
+                    styles.btnText,
+                    selected === 'viewer' && styles.activeText,
+                  ]}>
+                  뷰어
+                </Text>
+              </Pressable>
+            </View>
+          )}
           <Pressable
-            style={[styles.stop, selected !== 'none' && styles.active]}
+            style={[
+              styles.stop,
+              selected !== 'none' && styles.active,
+              selected === 'none' ? styles.stopMarginTop : null,
+            ]}
             disabled={selected === 'none'}
             onPress={handleStop}>
             <Text
@@ -189,6 +223,14 @@ const Video = ({navigation, route}) => {
             </Text>
           </Pressable>
         </View>
+        {/* 비디오 처리 결과를 표시하는 부분 추가 */}
+        {videoProcessResult && (
+          <View style={styles.resultContainer}>
+            <Text style={styles.resultText}>
+              비디오 분석 결과: {videoProcessResult}
+            </Text>
+          </View>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -254,6 +296,8 @@ const styles = StyleSheet.create({
     borderColor: '#969696',
     paddingVertical: 12,
     width: '50%',
+  },
+  stopMarginTop: {
     marginTop: 50,
   },
   active: {
@@ -265,20 +309,27 @@ const styles = StyleSheet.create({
   },
   statusContainer: {
     position: 'relative',
-    // width: '80%',
-    // alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
+    paddingTop: 20,
   },
   gradient: {
     ...StyleSheet.absoluteFillObject,
     borderRadius: 12,
-    // borderWidth: 1,
-    // borderColor: '#FFFACD',
     paddingVertical: 4,
     paddingHorizontal: 8,
     marginVertical: 24,
-    // borderStyle: 'dashed',
+  },
+  resultContainer: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    borderRadius: 10,
+  },
+  resultText: {
+    color: 'white',
+    fontSize: 16,
+    textAlign: 'center',
   },
 });
 

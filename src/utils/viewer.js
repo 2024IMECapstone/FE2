@@ -117,7 +117,8 @@ export const startViewer = async (
 
   const constraints = {
     video: true,
-    audio: true,
+    // audio: true,
+    audio: false,
   };
 
   viewer.peerConnection = new RTCPeerConnection(configuration);

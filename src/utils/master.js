@@ -115,7 +115,8 @@ export const startMaster = async (
   const constraints = {
     // video: true,
     video: {facingMode: 'environment'}, // 후면 카메라로 설정
-    audio: true,
+    // audio: true,
+    autio: false,
   };
 
   // Get a stream from the webcam and display it in the local view.

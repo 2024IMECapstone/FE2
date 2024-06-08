@@ -23,11 +23,11 @@ LogBox.ignoreLogs([
 
 PushNotification.createChannel(
   {
-    channelId: 'id-babystar', // (required)
-    channelName: 'ch-babystar', // (required)
+    channelId: 'id-babystar-new', // (required)
+    channelName: 'ch-babystar-new', // (required)
     channelDescription: 'A channel to categorise your notifications', // (optional) default: undefined.
-    // playSound: true, // (optional) default: true
-    // soundName: 'default', // (optional) See `soundName` parameter of `localNotification` function
+    playSound: true, // (optional) default: true
+    soundName: 'alarm_short', // (optional) See `soundName` parameter of `localNotification` function
     // importance: Importance.HIGH, // (optional) default: Importance.HIGH. Int value of the Android notification importance
     vibrate: true, // (optional) default: true. Creates the default vibration pattern if true.
   },
@@ -143,12 +143,13 @@ const Video = ({navigation, route}) => {
     // Schedule push notification
     console.log('Scheduling push notification...');
     PushNotification.localNotificationSchedule({
-      channelId: 'id-babystar',
+      channelId: 'id-babystar-new',
       title: '🚨아기 낙상 위험',
       message: '아기가 위험한 상태에 있어요! 확인해주세요!',
-      date: new Date(Date.now() + 1 * 1000), // 3 seconds after button press
+      date: new Date(Date.now() + 7 * 1000), // 3 seconds after button press
       largeIcon: 'logo_44x44', // (우측)알림 아이콘 설정
       smallIcon: 'logo', // (좌측)알림 아이콘 설정
+      soundName: 'alarm_short',
     });
   };
 

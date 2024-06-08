@@ -14,11 +14,25 @@ import Viewer from '../../components/Viewer';
 import {startMaster, stopMaster} from '../../utils/master';
 import {startViewer, stopViewer} from '../../utils/viewer';
 import {LogBox} from 'react-native';
+import PushNotification, {Importance} from 'react-native-push-notification';
 import axios from 'axios';
 
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
 ]);
+
+PushNotification.createChannel(
+  {
+    channelId: 'id-babystar', // (required)
+    channelName: 'ch-babystar', // (required)
+    channelDescription: 'A channel to categorise your notifications', // (optional) default: undefined.
+    // playSound: true, // (optional) default: true
+    // soundName: 'default', // (optional) See `soundName` parameter of `localNotification` function
+    // importance: Importance.HIGH, // (optional) default: Importance.HIGH. Int value of the Android notification importance
+    vibrate: true, // (optional) default: true. Creates the default vibration pattern if true.
+  },
+  created => console.log(`createChannel returned '${created}'`), // (optional) callback returns whether the channel was created, false means it already existed.
+);
 
 const Video = ({navigation, route}) => {
   const [localView, setLocalView] = useState('');
@@ -84,30 +98,16 @@ const Video = ({navigation, route}) => {
 
     // 8초 후에 axios GET 요청 보내기
     console.log('Sending GET request to video process server...');
-    // setTimeout(() => {
-    //   axios
-    //     .get(
-    //       'http://ec2-13-125-118-121.ap-northeast-2.compute.amazonaws.com:5000/process_video',
-    //     )
-    //     .then(response => {
-    //       console.log('Response from video process server:', response.data);
-    //       setVideoProcessResult(response.data); // 응답 값을 상태 변수에 저장
-    //     })
-    //     .catch(error => {
-    //       console.error('Error fetching from video process server:', error);
-    //     });
-    // }, 1000); // 8000 ms = 8 seconds
-    axios
-      .get(
-        'http://ec2-54-180-79-37.ap-northeast-2.compute.amazonaws.com:5000/process_video',
-      )
-      .then(response => {
-        console.log('Response from video process server:', response.data);
-        // setVideoProcessResult(response.data); // 응답 값을 상태 변수에 저장
-      })
-      .catch(error => {
-        console.error('Error fetching from video process server:', error);
-      });
+    // axios
+    //   .get(
+    //     'http://ec2-54-180-79-37.ap-northeast-2.compute.amazonaws.com:5000/process_video',
+    //   )
+    //   .then(response => {
+    //     console.log('Response from video process server:', response.data);
+    //   })
+    //   .catch(error => {
+    //     console.error('Error fetching from video process server:', error);
+    //   });
   };
 
   const handleStop = () => {
@@ -128,6 +128,28 @@ const Video = ({navigation, route}) => {
     } else {
       return 'rgba(255, 192, 203, 0.9)'; // Light Red (Pink) with transparency
     }
+  };
+
+  const handleStartViewer = () => {
+    startViewer(
+      localView,
+      setLocalView,
+      remoteView,
+      setRemoteView,
+      setSelected,
+    );
+    setSelected('viewer');
+    navigation.setOptions({setOn: true});
+    // Schedule push notification
+    console.log('Scheduling push notification...');
+    PushNotification.localNotificationSchedule({
+      channelId: 'id-babystar',
+      title: '🚨아기 낙상 위험',
+      message: '아기가 위험한 상태에 있어요! 확인해주세요!',
+      date: new Date(Date.now() + 1 * 1000), // 3 seconds after button press
+      largeIcon: 'logo_44x44', // (우측)알림 아이콘 설정
+      smallIcon: 'logo', // (좌측)알림 아이콘 설정
+    });
   };
 
   return (
@@ -185,17 +207,7 @@ const Video = ({navigation, route}) => {
               <Pressable
                 style={[styles.button, selected === 'viewer' && styles.active]}
                 disabled={selected !== 'none'}
-                onPress={() => {
-                  startViewer(
-                    localView,
-                    setLocalView,
-                    remoteView,
-                    setRemoteView,
-                    setSelected,
-                  );
-                  setSelected('viewer');
-                  navigation.setOptions({setOn: true});
-                }}>
+                onPress={handleStartViewer}>
                 <Text
                   style={[
                     styles.btnText,

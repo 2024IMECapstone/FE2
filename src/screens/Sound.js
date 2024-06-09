@@ -52,24 +52,30 @@ export default function Sound() {
                 const mappedData = response.data.map(item => {
                     let title;
                     switch (item.content) {
-                        case '졸림':
-                            title = '타로가 졸린 것 같아요';
+                        case '피곤함':
+                            title = '타로가 피곤한 것 같아요';
                             break;
                         case '배고픔':
                             title = '타로가 배고픈 것 같아요';
                             break;
-                        case '배앓이':
-                            title = '타로가 배앓이 중인 것 같아요';
+                        case '불편함':
+                            title = '타로가 불편한 것 같아요';
                             break;
-                        case '트름':
-                            title = '타로가 트름하고 싶은 것 같아요';
+                        case '고통':
+                            title = '타로가 아픈 것 같아요';
+                            break;
+                        case '질식사':
+                            title = '질식의 위험이 있어요';
                             break;
                         default:
-                            title = item.content;
+                            title = '타로가 울고 있어요';
                     }
+
+                    const createdDate = new Date(item.created);
+                    const formattedDate = createdDate.toISOString().split('T')[0];
                     return {
                         title: title,
-                        description: item.created
+                        description: formattedDate
                     };
                 });
                 setCrying(mappedData);

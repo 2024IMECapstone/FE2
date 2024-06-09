@@ -111,9 +111,11 @@ export default function Monitoring() {
           'http://ec2-43-200-172-11.ap-northeast-2.compute.amazonaws.com:8080/api/monitoring'
         );
         const mappedData = response.data.map(item => {
+          const createdDate = new Date(item.created);
+          const formattedDate = createdDate.toISOString().split('T')[0]; // 'YYYY-MM-DD'
           return {
             title: item.content,
-            description: item.created
+            description: formattedDate,
           };
         });
         setMonitoring(mappedData);

@@ -59,13 +59,15 @@ const Video = ({navigation, route}) => {
         if (!isRequestInProgress) {
           setIsRequestInProgress(true);
           axios
-            .get('http://172.19.17.109:5000/process_audio')
+            .get('http://192.168.0.18:5000/process_audio')
             .then(response => {
               console.log('Response from local server:', response.data);
               if (response.data.status === 'not_detected') {
-                setStatusMessage('아기는 평온합니다 :)');
+                setStatusMessage('👂🏻아기는 평온합니다 :)');
               } else if (response.data.status === 'detected') {
-                setStatusMessage(response.data.cryingType);
+                setStatusMessage(
+                  `👂🏻아기가 ${response.data.cryingType} 상태에요!`,
+                );
               }
             })
             .catch(error => {
@@ -93,7 +95,7 @@ const Video = ({navigation, route}) => {
       setSelected,
     );
     setSelected('cctv');
-    setStatusMessage('아기의 울음소리를 분석중입니다...');
+    setStatusMessage('👂🏻아기의 울음소리를 분석중입니다...');
     navigation.setOptions({setOn: true});
 
     // 8초 후에 axios GET 요청 보내기
@@ -121,9 +123,9 @@ const Video = ({navigation, route}) => {
   const getStatusBackgroundColor = message => {
     if (message === '역할 선택하기') {
       return 'transparent';
-    } else if (message === '아기는 평온합니다 :)') {
+    } else if (message === '👂🏻아기는 평온합니다 :)') {
       return 'rgba(144, 238, 144, 0.5)'; // Light Green with transparency
-    } else if (message === '아기의 울음소리를 분석중입니다...') {
+    } else if (message === '👂🏻아기의 울음소리를 분석중입니다...') {
       return 'rgba(255, 255, 0, 0.2)'; // Light Yellow with transparency
     } else {
       return 'rgba(255, 192, 203, 0.9)'; // Light Red (Pink) with transparency
@@ -237,13 +239,13 @@ const Video = ({navigation, route}) => {
           </Pressable>
         </View>
         {/* 비디오 처리 결과를 표시하는 부분 추가 */}
-        {videoProcessResult && (
+        {/* {videoProcessResult && (
           <View style={styles.resultContainer}>
             <Text style={styles.resultText}>
               비디오 분석 결과: {videoProcessResult}
             </Text>
           </View>
-        )}
+        )} */}
       </View>
     </SafeAreaView>
   );
@@ -279,7 +281,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: 'black',
-    marginVertical: 20,
+    // marginVertical: 20,
+    marginBottom: 10,
     zIndex: 1, // Ensure text is above the gradient
   },
   selectView: {
@@ -321,17 +324,26 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   statusContainer: {
+    display: 'flex',
     position: 'relative',
+    textAlign: 'center',
     alignItems: 'center',
+    alignSelf: 'center',
     justifyContent: 'center',
+    verticalAlign: 'middle',
     paddingTop: 20,
+    height: 100,
+    paddingHorizontal: 10,
   },
   gradient: {
     ...StyleSheet.absoluteFillObject,
     borderRadius: 12,
     paddingVertical: 4,
-    paddingHorizontal: 8,
+    paddingHorizontal: 16,
     marginVertical: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
   },
   resultContainer: {
     marginTop: 20,

@@ -1,10 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-} from 'react-native';
+import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
 import {
   StatusBar,
   Box,
@@ -64,7 +59,6 @@ export default function DiaryDetail() {
   const [sleep, setSleep] = useState(null);
   const [growth, setGrowth] = useState(null);
 
-
   useEffect(() => {
     const fetchDiary = async () => {
       try {
@@ -85,7 +79,7 @@ export default function DiaryDetail() {
     const fetchMeal = async () => {
       try {
         const response = await axios.get(
-          `http://ec2-43-200-172-11.ap-northeast-2.compute.amazonaws.com:8080/api/meal?diaryId=${diaryId}`
+          `http://ec2-43-200-172-11.ap-northeast-2.compute.amazonaws.com:8080/api/meal?diaryId=${diaryId}`,
         );
         console.log('Meal fetched:', response.data);
         if (response.data.length > 0) {
@@ -100,60 +94,58 @@ export default function DiaryDetail() {
   }, [diaryId]);
 
   useEffect(() => {
-      const fetchPoo = async () => {
-        try {
-          const response = await axios.get(
-            `http://ec2-43-200-172-11.ap-northeast-2.compute.amazonaws.com:8080/api/poo?diaryId=${diaryId}`
-          );
-          console.log('Poo fetched:', response.data);
-          if (response.data.length > 0) {
-            setPoo(response.data[0]);
-          }
-        } catch (error) {
-          console.error('Error fetching Poo:', error);
+    const fetchPoo = async () => {
+      try {
+        const response = await axios.get(
+          `http://ec2-43-200-172-11.ap-northeast-2.compute.amazonaws.com:8080/api/poo?diaryId=${diaryId}`,
+        );
+        console.log('Poo fetched:', response.data);
+        if (response.data.length > 0) {
+          setPoo(response.data[0]);
         }
-      };
+      } catch (error) {
+        console.error('Error fetching Poo:', error);
+      }
+    };
 
-      fetchPoo();
-    }, [diaryId]);
+    fetchPoo();
+  }, [diaryId]);
 
-   useEffect(() => {
-       const fetchSleep = async () => {
-         try {
-           const response = await axios.get(
-             `http://ec2-43-200-172-11.ap-northeast-2.compute.amazonaws.com:8080/api/sleep?diaryId=${diaryId}`
-           );
-           console.log('Sleep fetched:', response.data);
-           if (response.data.length > 0) {
-             setSleep(response.data[0]);
-           }
-         } catch (error) {
-           console.error('Error fetching Sleep:', error);
-         }
-       };
+  useEffect(() => {
+    const fetchSleep = async () => {
+      try {
+        const response = await axios.get(
+          `http://ec2-43-200-172-11.ap-northeast-2.compute.amazonaws.com:8080/api/sleep?diaryId=${diaryId}`,
+        );
+        console.log('Sleep fetched:', response.data);
+        if (response.data.length > 0) {
+          setSleep(response.data[0]);
+        }
+      } catch (error) {
+        console.error('Error fetching Sleep:', error);
+      }
+    };
 
-       fetchSleep();
-     }, [diaryId]);
+    fetchSleep();
+  }, [diaryId]);
 
-     useEffect(() => {
-         const fetchGrowth = async () => {
-           try {
-             const response = await axios.get(
-               `http://ec2-43-200-172-11.ap-northeast-2.compute.amazonaws.com:8080/api/growth?diaryId=${diaryId}`
-             );
-             console.log('Growth fetched:', response.data);
-             if (response.data.length > 0) {
-               setGrowth(response.data[0]);
-             }
-           } catch (error) {
-             console.error('Error fetching Growth:', error);
-           }
-         };
+  useEffect(() => {
+    const fetchGrowth = async () => {
+      try {
+        const response = await axios.get(
+          `http://ec2-43-200-172-11.ap-northeast-2.compute.amazonaws.com:8080/api/growth?diaryId=${diaryId}`,
+        );
+        console.log('Growth fetched:', response.data);
+        if (response.data.length > 0) {
+          setGrowth(response.data[0]);
+        }
+      } catch (error) {
+        console.error('Error fetching Growth:', error);
+      }
+    };
 
-         fetchGrowth();
-       }, [diaryId]);
-
-
+    fetchGrowth();
+  }, [diaryId]);
 
   const openModal = () => {
     setIsModalVisible(true);
@@ -177,14 +169,14 @@ export default function DiaryDetail() {
     }
   };
 
-  const formatDate = (dateString) => {
-      const date = new Date(dateString);
-      const year = date.getFullYear();
-      const month = date.getMonth() + 1;
-      const day = date.getDate();
-      // const weekday = date.toLocaleDateString('ko-KR', { weekday: 'short' });
-      return `${year}년 ${month}월 ${day}일`;
-    };
+  const formatDate = dateString => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    // const weekday = date.toLocaleDateString('ko-KR', { weekday: 'short' });
+    return `${year}년 ${month}월 ${day}일`;
+  };
 
   return (
     <NativeBaseProvider>
@@ -209,43 +201,89 @@ export default function DiaryDetail() {
         )}
         {meal && (
           <>
-            <Text style={{fontSize: 16, color: '#615C5C', paddingLeft:10, marginTop: 20, alignSelf: 'flex-start'}}>[키워드] 식사</Text>
+            <Text
+              style={{
+                fontSize: 16,
+                color: '#615C5C',
+                paddingLeft: 10,
+                marginTop: 20,
+                alignSelf: 'flex-start',
+              }}>
+              [키워드] 식사
+            </Text>
             <S.Card style={{gap: 30, marginTop: 10}}>
-              <Text>{meal.content === '()' ? '관련 내용이 없습니다.' : meal.content}</Text>
+              <Text style={styles.text}>
+                {meal.content === '()' ? '관련 내용이 없습니다.' : meal.content}
+              </Text>
             </S.Card>
           </>
         )}
 
         {poo && (
           <>
-            <Text style={{fontSize: 16, color: '#615C5C', paddingLeft:10, marginTop: 20, alignSelf: 'flex-start'}}>[키워드] 배변</Text>
+            <Text
+              style={{
+                fontSize: 16,
+                color: '#615C5C',
+                paddingLeft: 10,
+                marginTop: 20,
+                alignSelf: 'flex-start',
+              }}>
+              [키워드] 배변
+            </Text>
             <S.Card style={{gap: 30, marginTop: 10}}>
-              <Text>{poo.content === '()' ? '관련 내용이 없습니다.' : poo.content}</Text>
+              <Text style={styles.text}>
+                {poo.content === '()' ? '관련 내용이 없습니다.' : poo.content}
+              </Text>
             </S.Card>
           </>
         )}
 
         {sleep && (
           <>
-            <Text style={{fontSize: 16, color: '#615C5C', paddingLeft:10, marginTop: 20, alignSelf: 'flex-start'}}>[키워드] 잠</Text>
+            <Text
+              style={{
+                fontSize: 16,
+                color: '#615C5C',
+                paddingLeft: 10,
+                marginTop: 20,
+                alignSelf: 'flex-start',
+              }}>
+              [키워드] 잠
+            </Text>
             <S.Card style={{gap: 30, marginTop: 10}}>
-              <Text>{sleep.content === '()' ? '관련 내용이 없습니다.' : sleep.content}</Text>
+              <Text style={styles.text}>
+                {sleep.content === '()'
+                  ? '관련 내용이 없습니다.'
+                  : sleep.content}
+              </Text>
             </S.Card>
           </>
         )}
 
         {growth && (
           <>
-            <Text style={{fontSize: 16, color: '#615C5C', paddingLeft:10, marginTop: 20, alignSelf: 'flex-start'}}>[키워드] 성장</Text>
+            <Text
+              style={{
+                fontSize: 16,
+                color: '#615C5C',
+                paddingLeft: 10,
+                marginTop: 20,
+                alignSelf: 'flex-start',
+              }}>
+              [키워드] 성장
+            </Text>
             <S.Card style={{gap: 30, marginTop: 10}}>
-              <Text>{growth.content === '()' ? '관련 내용이 없습니다.' : growth.content}</Text>
+              <Text style={styles.text}>
+                {growth.content === '()'
+                  ? '관련 내용이 없습니다.'
+                  : growth.content}
+              </Text>
             </S.Card>
           </>
         )}
       </S.Container>
-      <Modal
-        visible={isModalVisible}
-        onRequestClose={closeModal}>
+      <Modal visible={isModalVisible} onRequestClose={closeModal}>
         <View style={styles.modalBackground}>
           <View style={styles.modalContent}>
             <Text style={styles.text}>이 육아일기를 삭제하시겠습니까?</Text>
@@ -294,5 +332,8 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     marginTop: 20,
+  },
+  text: {
+    color: '#615C5C',
   },
 });

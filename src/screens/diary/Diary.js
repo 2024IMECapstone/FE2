@@ -89,7 +89,7 @@ export default function Diary() {
     fetchData();
   }, []);
 
-  const formatDate = (dateString) => {
+  const formatDate = dateString => {
     const date = new Date(dateString);
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
@@ -109,7 +109,7 @@ export default function Diary() {
           <S.Card key={index} style={{gap: 30}}>
             <S.DiaryHeader>
               <Text style={{fontSize: 18, color: '#615C5C'}}>
-              {formatDate(diary.created)}
+                {formatDate(diary.created)}
               </Text>
               <TouchableOpacity onPress={() => goToDiaryDetail(diary.id)}>
                 <AntDesign name="right" size={20} color="black" />

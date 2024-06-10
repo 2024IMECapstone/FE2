@@ -15,7 +15,7 @@ const TimelineAPI = ({ data, showAll, onShowMore }) => {
     };
 
     return (
-        <View style={[styles.timelineContainer, { height: showAll ? data.length * 42 + 2 : data.length * 42 + 20}]}>
+        <View style={[styles.timelineContainer, { height: showAll ? data.length * 42 : 120 }]}>
             <Timeline
                 showTime={false}
                 data={showAll ? data.slice(0, data.length) : data.slice(0, 4)}
@@ -39,48 +39,25 @@ const TimelineAPI = ({ data, showAll, onShowMore }) => {
     );
 }
 
-export default function Sound() {
-    const [crying, setCrying] = useState([]);
+export default function MonitoringTimeline() {
+    const [monitoring, setMonitoring] = useState([]);
     const [showAll, setShowAll] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const response = await axios.get(
-                    'http://ec2-43-200-172-11.ap-northeast-2.compute.amazonaws.com:8080/api/crying'
+                    'http://ec2-43-200-172-11.ap-northeast-2.compute.amazonaws.com:8080/api/mornitoring'
                 );
                 const mappedData = response.data.map(item => {
-                    let title;
-                    switch (item.content) {
-                        case '피곤함':
-                            title = '타로가 피곤한 것 같아요';
-                            break;
-                        case '배고픔':
-                            title = '타로가 배고픈 것 같아요';
-                            break;
-                        case '불편함':
-                            title = '타로가 불편한 것 같아요';
-                            break;
-                        case '고통':
-                            title = '타로가 아픈 것 같아요';
-                            break;
-                        case '질식사':
-                            title = '질식의 위험이 있어요';
-                            break;
-                        default:
-                            title = '타로가 울고 있어요';
-                    }
-
-                    const createdDate = new Date(item.created);
-                    const formattedDate = createdDate.toISOString().split('T')[0];
                     return {
-                        title: title,
-                        description: formattedDate
+                        title: item.content,
+                        description: item.created
                     };
                 });
-                setCrying(mappedData);
+                setMonitoring(mappedData);
             } catch (error) {
-                console.error('Error fetching Crying data:', error);
+                console.error('Error fetching Monitoring data:', error);
             }
         };
 
@@ -91,10 +68,10 @@ export default function Sound() {
         setShowAll(true);
     };
     return (
-        <TimelineAPI data={crying} showAll={showAll} onShowMore={handleShowMore} />
+        <TimelineAPI data={monitoring} showAll={showAll} onShowMore={handleShowMore} />
     );
 }
-
+/*
 const styles = StyleSheet.create({
     container: {
         padding: 16,
@@ -147,3 +124,4 @@ const styles = StyleSheet.create({
         color: '#000000',
     },
 });
+*/

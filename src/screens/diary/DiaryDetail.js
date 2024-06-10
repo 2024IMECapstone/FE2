@@ -1,10 +1,9 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   View,
   Text,
   TouchableOpacity,
-  LayoutAnimation,
 } from 'react-native';
 import {
   StatusBar,
@@ -14,8 +13,6 @@ import {
   NativeBaseProvider,
 } from 'native-base';
 import Modal from 'react-native-modal';
-// import { Octicons, AntDesign } from "@expo/vector-icons";
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Octicons from 'react-native-vector-icons/Octicons';
 import {useNavigation, useRoute} from '@react-navigation/native';
@@ -38,7 +35,6 @@ function AppBar() {
         justifyContent="space-between"
         alignItems="center"
         w="100%"
-        // maxW="350"
         style={{
           borderBottomLeftRadius: 20,
           borderBottomRightRadius: 20,
@@ -52,15 +48,6 @@ function AppBar() {
             icon={<AntDesign name="left" size={20} color="black" />}
           />
         </HStack>
-        <HStack>
-          {/*
-          <IconButton
-            icon={
-              <Ionicons name="notifications-outline" size={20} color="black" />
-            }
-          />
-          */}
-        </HStack>
       </HStack>
     </>
   );
@@ -68,14 +55,15 @@ function AppBar() {
 
 export default function DiaryDetail() {
   const navigation = useNavigation();
-  const goToWriteDiary = () => {
-    navigation.navigate('WriteDiary');
-  };
-
   const route = useRoute();
   const {diaryId} = route.params;
   const [diary, setDiary] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [meal, setMeal] = useState(null);
+  const [poo, setPoo] = useState(null);
+  const [sleep, setSleep] = useState(null);
+  const [growth, setGrowth] = useState(null);
+
 
   useEffect(() => {
     const fetchDiary = async () => {
@@ -93,65 +81,125 @@ export default function DiaryDetail() {
     fetchDiary();
   }, [diaryId]);
 
-  // 모달 열기 함수
+  useEffect(() => {
+    const fetchMeal = async () => {
+      try {
+        const response = await axios.get(
+          `http://ec2-43-200-172-11.ap-northeast-2.compute.amazonaws.com:8080/api/meal?diaryId=${diaryId}`
+        );
+        console.log('Meal fetched:', response.data);
+        if (response.data.length > 0) {
+          setMeal(response.data[0]);
+        }
+      } catch (error) {
+        console.error('Error fetching meal:', error);
+      }
+    };
+
+    fetchMeal();
+  }, [diaryId]);
+
+  useEffect(() => {
+      const fetchPoo = async () => {
+        try {
+          const response = await axios.get(
+            `http://ec2-43-200-172-11.ap-northeast-2.compute.amazonaws.com:8080/api/poo?diaryId=${diaryId}`
+          );
+          console.log('Poo fetched:', response.data);
+          if (response.data.length > 0) {
+            setPoo(response.data[0]);
+          }
+        } catch (error) {
+          console.error('Error fetching Poo:', error);
+        }
+      };
+
+      fetchPoo();
+    }, [diaryId]);
+
+   useEffect(() => {
+       const fetchSleep = async () => {
+         try {
+           const response = await axios.get(
+             `http://ec2-43-200-172-11.ap-northeast-2.compute.amazonaws.com:8080/api/sleep?diaryId=${diaryId}`
+           );
+           console.log('Sleep fetched:', response.data);
+           if (response.data.length > 0) {
+             setSleep(response.data[0]);
+           }
+         } catch (error) {
+           console.error('Error fetching Sleep:', error);
+         }
+       };
+
+       fetchSleep();
+     }, [diaryId]);
+
+     useEffect(() => {
+         const fetchGrowth = async () => {
+           try {
+             const response = await axios.get(
+               `http://ec2-43-200-172-11.ap-northeast-2.compute.amazonaws.com:8080/api/growth?diaryId=${diaryId}`
+             );
+             console.log('Growth fetched:', response.data);
+             if (response.data.length > 0) {
+               setGrowth(response.data[0]);
+             }
+           } catch (error) {
+             console.error('Error fetching Growth:', error);
+           }
+         };
+
+         fetchGrowth();
+       }, [diaryId]);
+
+
+
   const openModal = () => {
     setIsModalVisible(true);
   };
 
-  // 모달 닫기 함수
   const closeModal = () => {
     setIsModalVisible(false);
   };
 
-  // 일기 삭제 함수
   const deleteDiary = async () => {
     try {
-      // console.log(diaryId);
       const response = await axios.delete(
         `http://ec2-43-200-172-11.ap-northeast-2.compute.amazonaws.com:8080/api/diary/${diaryId}`,
       );
       console.log(response);
       console.log('Diary deleted');
-      // 모달 닫기
       closeModal();
-      // 일기 삭제 후 육아일기 페이지로 이동
-      navigation.navigate('Diary'); // Main
+      navigation.navigate('Diary');
     } catch (error) {
       console.error('Error deleting diary:', error);
     }
   };
 
+  const formatDate = (dateString) => {
+      const date = new Date(dateString);
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
+      // const weekday = date.toLocaleDateString('ko-KR', { weekday: 'short' });
+      return `${year}년 ${month}월 ${day}일`;
+    };
+
   return (
     <NativeBaseProvider>
       <AppBar />
       <S.Container contentContainerStyle={{alignItems: 'center'}}>
-        {/* 추후 Card는 get을 통해 data fetch 필요 */}
         {diary && (
           <S.Card style={{gap: 30}}>
             <S.DiaryHeader>
               <Text style={{fontSize: 18, color: '#615C5C'}}>
-                {new Date(diary.created)
-                  .toLocaleDateString('ko-KR', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                  })
-                  .replace(/\./g, '/')
-                  .replace(/\s/g, '')
-                  .replace(/\/$/, '')}
-                {'('}
-                {new Date(diary.created).toLocaleDateString('ko-KR', {
-                  weekday: 'short',
-                })}
-                {')'}
+                {formatDate(diary.created)}
               </Text>
               <TouchableOpacity onPress={openModal}>
                 <Octicons name="repo-deleted" size={24} color="black" />
               </TouchableOpacity>
             </S.DiaryHeader>
-            <S.CardInnerBorder2>
-              <Text>해당날짜사진 - url 이용</Text>
-            </S.CardInnerBorder2>
             <S.DiaryContext
               textBreakStrategy="balanced"
               lineBreakStrategyIOS="hangul-word">
@@ -159,10 +207,43 @@ export default function DiaryDetail() {
             </S.DiaryContext>
           </S.Card>
         )}
+        {meal && (
+          <>
+            <Text style={{fontSize: 16, color: '#615C5C', paddingLeft:10, marginTop: 20, alignSelf: 'flex-start'}}>[키워드] 식사</Text>
+            <S.Card style={{gap: 30, marginTop: 10}}>
+              <Text>{meal.content === '()' ? '관련 내용이 없습니다.' : meal.content}</Text>
+            </S.Card>
+          </>
+        )}
+
+        {poo && (
+          <>
+            <Text style={{fontSize: 16, color: '#615C5C', paddingLeft:10, marginTop: 20, alignSelf: 'flex-start'}}>[키워드] 배변</Text>
+            <S.Card style={{gap: 30, marginTop: 10}}>
+              <Text>{poo.content === '()' ? '관련 내용이 없습니다.' : poo.content}</Text>
+            </S.Card>
+          </>
+        )}
+
+        {sleep && (
+          <>
+            <Text style={{fontSize: 16, color: '#615C5C', paddingLeft:10, marginTop: 20, alignSelf: 'flex-start'}}>[키워드] 잠</Text>
+            <S.Card style={{gap: 30, marginTop: 10}}>
+              <Text>{sleep.content === '()' ? '관련 내용이 없습니다.' : sleep.content}</Text>
+            </S.Card>
+          </>
+        )}
+
+        {growth && (
+          <>
+            <Text style={{fontSize: 16, color: '#615C5C', paddingLeft:10, marginTop: 20, alignSelf: 'flex-start'}}>[키워드] 성장</Text>
+            <S.Card style={{gap: 30, marginTop: 10}}>
+              <Text>{growth.content === '()' ? '관련 내용이 없습니다.' : growth.content}</Text>
+            </S.Card>
+          </>
+        )}
       </S.Container>
-      {/* 모달 */}
       <Modal
-        // animationType="slide"
         visible={isModalVisible}
         onRequestClose={closeModal}>
         <View style={styles.modalBackground}>
@@ -194,28 +275,24 @@ const styles = StyleSheet.create({
     color: 'gray',
   },
   modalBackground: {
-    // flex: 1,
     height: '120%',
-    // width: "120%",
     margin: -30,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent black background
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   modalContent: {
     display: 'flex',
     alignItems: 'center',
-    backgroundColor: '#fff', // White background for modal content
+    backgroundColor: '#fff',
     padding: 20,
     borderRadius: 10,
-    // gap: 30,
-    width: '80%', // Adjust width as needed
+    width: '80%',
     color: 'black',
   },
   modalBtnBox: {
     display: 'flex',
     flexDirection: 'row',
     marginTop: 20,
-    // gap: 5,
   },
 });

@@ -109,7 +109,19 @@ export default function Diary() {
           <S.Card key={index} style={{gap: 30}}>
             <S.DiaryHeader>
               <Text style={{fontSize: 18, color: '#615C5C'}}>
+<<<<<<< Updated upstream
                 {formatDate(diary.created)}
+=======
+                {new Date(diary.created)
+                  .toLocaleDateString('ko-KR', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                  })
+                  .replace(/\./g, '/')
+                  .replace(/\s/g, '')
+                  .replace(/\/$/, '')}
+>>>>>>> Stashed changes
               </Text>
               <TouchableOpacity onPress={() => goToDiaryDetail(diary.id)}>
                 <AntDesign name="right" size={20} color="black" />

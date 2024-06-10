@@ -11,7 +11,7 @@ import LinearGradient from 'react-native-linear-gradient'; // Import LinearGradi
 import Header from '../../components/Header';
 import Master from '../../components/Master';
 import Viewer from '../../components/Viewer';
-import {startMaster, stopMaster} from '../../utils/master';
+import {startMaster, stopMaster, master} from '../../utils/master';
 import {startViewer, stopViewer} from '../../utils/viewer';
 import {LogBox} from 'react-native';
 import PushNotification, {Importance} from 'react-native-push-notification';
@@ -41,6 +41,7 @@ const Video = ({navigation, route}) => {
   const [isRequestInProgress, setIsRequestInProgress] = useState(false);
   const [statusMessage, setStatusMessage] = useState('역할 선택하기');
   const [videoProcessResult, setVideoProcessResult] = useState(null); // 추가된 상태 변수
+  const [receivedData, setReceivedData] = useState(null); // Add this line
   const captureViewRef = useRef(null);
 
   useEffect(() => {
@@ -54,7 +55,7 @@ const Video = ({navigation, route}) => {
 
   useEffect(() => {
     let interval;
-    if (selected === 'cctv') {
+    if (selected === 'viewer') {
       interval = setInterval(() => {
         if (!isRequestInProgress) {
           setIsRequestInProgress(true);
@@ -62,6 +63,7 @@ const Video = ({navigation, route}) => {
             .get('http://192.168.0.18:5000/process_audio')
             .then(response => {
               console.log('Response from local server:', response.data);
+
               if (response.data.status === 'not_detected') {
                 setStatusMessage('👂🏻아기는 평온합니다 :)');
               } else if (response.data.status === 'detected') {
@@ -76,6 +78,18 @@ const Video = ({navigation, route}) => {
             .finally(() => {
               setIsRequestInProgress(false);
             });
+          // Send the response through the data channel
+          // Object.values(master.dataChannelByClientId).forEach(channel => {
+          //   console.log('state :', channel.readyState);
+          //   if (channel.readyState === 'open') {
+          //     channel.send(JSON.stringify(response.data));
+          //   } else {
+          //     console.log('Data channel is not open');
+          //     channel.onopen = () => {
+          //       channel.send(JSON.stringify(response.data));
+          //     };
+          //   }
+          // });
         }
       }, 5000); // 5000 ms = 5 seconds
     }
@@ -95,7 +109,8 @@ const Video = ({navigation, route}) => {
       setSelected,
     );
     setSelected('cctv');
-    setStatusMessage('👂🏻아기의 울음소리를 분석중입니다...');
+    // setStatusMessage('👂🏻아기의 울음소리를 분석중입니다...');
+    setStatusMessage('');
     navigation.setOptions({setOn: true});
 
     // 8초 후에 axios GET 요청 보내기
@@ -139,20 +154,27 @@ const Video = ({navigation, route}) => {
       remoteView,
       setRemoteView,
       setSelected,
+      setReceivedData, // Pass setReceivedData to startViewer
     );
     setSelected('viewer');
     navigation.setOptions({setOn: true});
+    setStatusMessage('👂🏻아기의 울음소리를 분석중입니다...');
     // Schedule push notification
     console.log('Scheduling push notification...');
     PushNotification.localNotificationSchedule({
       channelId: 'id-babystar-new',
       title: '🚨아기 낙상 위험',
       message: '아기가 위험한 상태에 있어요! 확인해주세요!',
-      date: new Date(Date.now() + 7 * 1000), // 3 seconds after button press
+      date: new Date(Date.now() + 3 * 1000), // 3 seconds after button press
       largeIcon: 'logo_44x44', // (우측)알림 아이콘 설정
       smallIcon: 'logo', // (좌측)알림 아이콘 설정
       soundName: 'alarm_short',
     });
+
+    // Set status message to '👂🏻아기는 평온합니다 :)' after 10 seconds
+    setTimeout(() => {
+      setStatusMessage('👂🏻아기는 평온합니다 :)');
+    }, 3000);
   };
 
   return (
@@ -181,14 +203,28 @@ const Video = ({navigation, route}) => {
           ) : (
             <Viewer remoteView={remoteView} />
           ))}
-        <View style={styles.select}>
-          <View style={styles.statusContainer}>
-            <LinearGradient
-              colors={['transparent', getStatusBackgroundColor(statusMessage)]}
-              style={styles.gradient}
-            />
-            <Text style={styles.text}>{statusMessage}</Text>
-          </View>
+        <View
+          style={[
+            styles.select,
+            selected === 'viewer' && styles.viewerMarginTop,
+          ]}>
+          {selected === 'viewer' && (
+            <View style={styles.statusContainer}>
+              <LinearGradient
+                colors={[
+                  'transparent',
+                  getStatusBackgroundColor(statusMessage),
+                ]}
+                style={styles.gradient}
+              />
+              {/* {receivedData && (
+              <View style={styles.dataContainer}>
+                <Text style={styles.dataText}>{receivedData}</Text>
+              </View>
+            )} */}
+              <Text style={styles.text}>{statusMessage}</Text>
+            </View>
+          )}
           {selected === 'none' && (
             <View style={styles.selectView}>
               <Pressable
@@ -276,6 +312,10 @@ const styles = StyleSheet.create({
     flexBasis: '50%',
     paddingHorizontal: 20,
     alignItems: 'center',
+    marginTop: 50,
+  },
+  viewerMarginTop: {
+    marginTop: -10,
   },
   text: {
     fontSize: 20,

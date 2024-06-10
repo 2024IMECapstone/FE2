@@ -177,6 +177,15 @@ export default function DiaryDetail() {
     }
   };
 
+  const formatDate = (dateString) => {
+      const date = new Date(dateString);
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
+      // const weekday = date.toLocaleDateString('ko-KR', { weekday: 'short' });
+      return `${year}년 ${month}월 ${day}일`;
+    };
+
   return (
     <NativeBaseProvider>
       <AppBar />
@@ -185,20 +194,7 @@ export default function DiaryDetail() {
           <S.Card style={{gap: 30}}>
             <S.DiaryHeader>
               <Text style={{fontSize: 18, color: '#615C5C'}}>
-                {new Date(diary.created)
-                  .toLocaleDateString('ko-KR', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                  })
-                  .replace(/\./g, '/')
-                  .replace(/\s/g, '')
-                  .replace(/\/$/, '')}
-                {'('}
-                {new Date(diary.created).toLocaleDateString('ko-KR', {
-                  weekday: 'short',
-                })}
-                {')'}
+                {formatDate(diary.created)}
               </Text>
               <TouchableOpacity onPress={openModal}>
                 <Octicons name="repo-deleted" size={24} color="black" />
@@ -215,7 +211,7 @@ export default function DiaryDetail() {
           <>
             <Text style={{fontSize: 16, color: '#615C5C', paddingLeft:10, marginTop: 20, alignSelf: 'flex-start'}}>[키워드] 식사</Text>
             <S.Card style={{gap: 30, marginTop: 10}}>
-              <Text>{meal.content}</Text>
+              <Text>{meal.content === '()' ? '관련 내용이 없습니다.' : meal.content}</Text>
             </S.Card>
           </>
         )}
@@ -224,7 +220,7 @@ export default function DiaryDetail() {
           <>
             <Text style={{fontSize: 16, color: '#615C5C', paddingLeft:10, marginTop: 20, alignSelf: 'flex-start'}}>[키워드] 배변</Text>
             <S.Card style={{gap: 30, marginTop: 10}}>
-              <Text>{poo.content}</Text>
+              <Text>{poo.content === '()' ? '관련 내용이 없습니다.' : poo.content}</Text>
             </S.Card>
           </>
         )}
@@ -233,7 +229,7 @@ export default function DiaryDetail() {
           <>
             <Text style={{fontSize: 16, color: '#615C5C', paddingLeft:10, marginTop: 20, alignSelf: 'flex-start'}}>[키워드] 잠</Text>
             <S.Card style={{gap: 30, marginTop: 10}}>
-              <Text>{sleep.content}</Text>
+              <Text>{sleep.content === '()' ? '관련 내용이 없습니다.' : sleep.content}</Text>
             </S.Card>
           </>
         )}
@@ -242,7 +238,7 @@ export default function DiaryDetail() {
           <>
             <Text style={{fontSize: 16, color: '#615C5C', paddingLeft:10, marginTop: 20, alignSelf: 'flex-start'}}>[키워드] 성장</Text>
             <S.Card style={{gap: 30, marginTop: 10}}>
-              <Text>{growth.content}</Text>
+              <Text>{growth.content === '()' ? '관련 내용이 없습니다.' : growth.content}</Text>
             </S.Card>
           </>
         )}
